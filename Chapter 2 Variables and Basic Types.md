@@ -301,7 +301,7 @@ auto i = 0, *p = &i;      // ok: i is int and p is a pointer to int
 auto sz = 0, pi = 3.14;   // error: inconsistent types for sz and pi
 ```
 #### Compound Types, `const`, and `auto`
-編譯器從`auto`得出的型別未必和initializer的型別保持一致，有時候編譯器會做一些調整來達成一般的初始化規則。  
+編譯器從`auto`得出的型別未必和initializer的型別保持一致，有時候編譯器會做一些調整來達成一般的初始化規則:  
 (1) 當我們使用reference當作initializer時，編譯器將會使用該reference所參考之物件的型別當成`auto`的type，*而非reference本身*:
 ``` c++
 int i = 0, &r = i;
