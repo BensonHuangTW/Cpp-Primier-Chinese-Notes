@@ -3,17 +3,16 @@
 #### Default Initialization
 當我們在定義變數的時候沒有提供initializer，則它會被default initialized，default value取決於該變數的型別以及被定義的地方，內建型別物件的值取決於他被定義的地方:
 
-(1)  如果定義於所有函式之外，則會被初始化為0。
-(2)  如果定義於函數之內，則這些變數為**uninitialized**(例外:static變數，見6.1.1)，並且他們 
-的值為未定義的(undefined)，複製或access這種變數是錯誤的。
+(1)  如果定義於所有函式之外，則會被初始化為0。  
+(2)  如果定義於函數之內，則這些變數為**uninitialized**(例外:static變數，見6.1.1)，並且他們的值為未定義的(undefined)，複製或access這種變數是錯誤的。  
 大部分的class可以默認初始化，例如如果我們不給string明確的initializer時，會獲得一個空字串，有些class不允許默認初始化，當我們沒在創建它的物件時提供initializer的話編譯器會complain。
 
 ### 2.2.2 Variable Declarations and Definitions
-為了支援separate compilation，C++將聲明(declaration)與定義(definition)做了區別:
-(1)	**聲明(declaration)**
-使得一個名稱(name)被程式所知道(makes a name known to the program)。
-(2)	**定義(definition)**
-創建該名稱的實體(creates the associated entity)。
+為了支援separate compilation，C++將聲明(declaration)與定義(definition)做了區別:  
+(1)	**聲明(declaration)**  
+使得一個名稱(name)被程式所知道(makes a name known to the program)。  
+(2)	**定義(definition)**  
+創建該名稱的實體(creates the associated entity)。  
 一個變數的聲明標示了該變數的(1)型別(2)名稱，而一個變數的定義就是一種聲明，除了標示型別及名稱外，定義還在記憶體中配置了空間(allocates storage)且可能為該變數提供了初始值。
 如果要獲得一個不是定義的聲明，我們加入關鍵字extern並且不提供一個explicit initializer:
 ``` C++
@@ -25,12 +24,12 @@ int j;          // declares and defines j
 extern double pi = 3.1416; // definition
 ```
 
-上面的語法可行，但是這麼做就蓋掉extern的作用了。但是在函數中這麼做會發生錯誤。
+上面的語法可行，但是這麼做就蓋掉extern的作用了。但是在函數中這麼做會發生錯誤。  
 注意:變數*只能被定義一次*，但是可以被聲明很多次!
 
 ## 2.3 Compound Types
-廣義上來說，一個宣告的結構為**base type**加上一串**declarator**，每個declarator都為一個變數命名並且給予該變數與base type相關的型別。
-e.g.
+廣義上來說，一個宣告的結構為**base type**加上一串**declarator**，每個declarator都為一個變數命名並且給予該變數與base type相關的型別。  
+>**Example**
 ``` C++
 int &reval;
 ```
@@ -75,8 +74,8 @@ int &r3 = i3, &r4 = i2;   // both r3 and r4 are references
 ```
 
 ## 2.4 `const` Qualifier
-當我們想將使某個變數的值不能被改變，則定義該變數為`const`。
-e.g.
+當我們想將使某個變數的值不能被改變，則定義該變數為`const`。  
+>**Example**
 ``` c++
 cons tint bufSize = 512;
 ```
@@ -94,8 +93,8 @@ bufSize = 512;  //錯誤，試圖寫入該const物件
 ``` c++
 const int bufSize = 512;
 ```
-編譯器通常會在編譯過程中把使用到該變量的地方替換成它對應的值。在此例中，編譯器會用`512`這個值來產生code代替`bufSize`的code，因此，編譯器必須能夠看見它的initializer才行，所以在一個被分割成多個檔案的程式中，每個檔案都必須都有對該`const`物件的定義，為了支持這個做法，同時避免對同一個變數的重複定義，默認情況下，`const`物件被設定成只在該檔案內有效，也就是說，若多個檔案中出現了同名的`const`變數，其實就像是在不同的檔案中分別定義了不同的變數一樣。
-e.g.
+編譯器通常會在編譯過程中把使用到該變量的地方替換成它對應的值。在此例中，編譯器會用`512`這個值來產生code代替`bufSize`的code，因此，編譯器必須能夠看見它的initializer才行，所以在一個被分割成多個檔案的程式中，每個檔案都必須都有對該`const`物件的定義，為了支持這個做法，同時避免對同一個變數的重複定義，默認情況下，`const`物件被設定成只在該檔案內有效，也就是說，若多個檔案中出現了同名的`const`變數，其實就像是在不同的檔案中分別定義了不同的變數一樣。  
+>**Example**
 ``` c++
 //在a.h中已經定一了一個const int變數i了
 //a.h的程式碼如下
@@ -115,16 +114,16 @@ int main(){
 }
 ```
 有時候我們想要在不同的檔案中共享同一個`const`變數，但是它的initializer不是一個常量expression，在這種情況下，如果我們不想要編譯器在不同的檔案裡分別產生不同的變數，而是能夠讓該`const`物件表現的跟其他nonconst變數一樣，只在一個檔案中定義`const`，而在多個檔案中使用它。
-想要解決這個問題(define a single instance of a `const` variable)，我們在該`const`變數的定義以及宣告都使用關鍵字`extern`。
-e.g.
+想要解決這個問題(define a single instance of a `const` variable)，我們在該`const`變數的定義以及宣告都使用關鍵字`extern`。  
+>**Example**
 ``` c++
 // file_1.cc defines and initializes a const that is accessible to other files
 extern const int bufSize = fcn();
 // file_1.h
 extern const int bufSize; // same bufSize as defined in file_1.cc
 ```
-在此例中，file_1.cc定義且初始化了`bufSize`，但`bufSize`是`const`，為了讓其他檔案能夠使用它，我們使用`extern`。在/file_1.h對`bufSize`的宣告仍用了`extern`，這表示(signify)` bufSize`並非該檔案特有的(not local to the file)而且其定義會在其他檔案中出現。
-e.g.
+在此例中，file_1.cc定義且初始化了`bufSize`，但`bufSize`是`const`，為了讓其他檔案能夠使用它，我們使用`extern`。在/file_1.h對`bufSize`的宣告仍用了`extern`，這表示(signify)`bufSize`並非該檔案特有的(not local to the file)而且其定義會在其他檔案中出現。  
+>**Example**
 ``` c++
 //a.h的程式碼如下
 #ifndef A_H
@@ -153,13 +152,13 @@ const int ci = 1024;
 const int &r1 = ci;   // ok: both reference and underlying object are const
 r1 = 42;              // error: r1 is a reference to const
 int &r2 = ci;         // error: non const reference to a const object
-```
-`Terminology : const Reference is a Reference to const `
+```  
+>**Terminology : const Reference is a Reference to const**  
 Reference並非一個物件，所以沒有是否為`const`的問題(因為它只能綁定一個對象，不能再改變，意義上來說一定是`const`)，因此當我們說const reference其實是在說reference to const(對常量做reference)。
 
 #### Initialization and References to `const`
-我們可以把一個對`const`物件的reference(Reference to const)綁定到非`const`的物件、literal或是一般的expression(只要可以轉換成該reference的type即可(e.g. `coust &int` 可綁定到double expression)。
-e.g.
+我們可以把一個對`const`物件的reference(Reference to const)綁定到非`const`的物件、literal或是一般的expression(只要可以轉換成該reference的type即可(e.g. `coust &int` 可綁定到double expression)。  
+>**Example**
 ``` c++
 int i = 42;
 const int &r1 = i;      // we can bind a const int& to a plain int object
@@ -177,11 +176,11 @@ const int &ri = dval;
 const int temp = dval;   // create a temporary const int from the double
 const int &ri = temp;    // bind ri to that temporary
 ```
-我們看到了`ri`其實是被綁定到一個**temporary** 物件，這是由編譯器在需要一個空間儲存expression運算後的結果時所創建的一個*未命名*的物件(通常在C++中被簡稱為temporary)，所以說，`ri`並非綁定於`dval`中，而是一個`const`的temporary，因此如果`ri`不是一個`const `reference，會被編譯器視作違法的。
+我們看到了`ri`其實是被綁定到一個**temporary** 物件，這是由編譯器在需要一個空間儲存expression運算後的結果時所創建的一個*未命名*的物件(通常在C++中被簡稱為temporary)，所以說，`ri`並非綁定於`dval`中，而是一個`const`的temporary，因此如果`ri`不是一個`const`reference，會被編譯器視作違法的。
 
 #### A Reference to `const` May Refer to an Object That Is Not `const`
-`const` reference綁定的物件不一定就是`const`的，它只代表我們*透過該reference*能做的事是受`const`限制的，而它被綁定的對象*未必*受到相同的限制。
-e.g.
+`const` reference綁定的物件不一定就是`const`的，它只代表我們*透過該reference*能做的事是受`const`限制的，而它被綁定的對象*未必*受到相同的限制。  
+>**Example**
 ``` c++
 int i = 42;
 int &r1 = i;          // r1 bound to i
@@ -225,8 +224,8 @@ if (*curErr) {
 ```
 ### 2.4.3 Top-Level `const`
 從上一小節可知，一個pointer是否`const`與其可指向的物件是否為`const`是可以獨立討論的:我們使用**top-level const**來表示該指標*本身*為`const`，而用**low-level const**來表示該指標*可以指向*`const`*物件*。
-更廣義來說，top-level const指的是該物件本身為`const`，top-level const可以出現在任何一種物件型別中(ex.內建算數型別、class type或pointer type等)，而low-level const則出現在複合型別(e.g. pointer or reference)的base type，因此pointer可以同時擁有top-level const與low-level const(而且兩者互相獨立)。
-e.g.
+更廣義來說，top-level const指的是該物件本身為`const`，top-level const可以出現在任何一種物件型別中(ex.內建算數型別、class type或pointer type等)，而low-level const則出現在複合型別(e.g. pointer or reference)的base type，因此pointer可以同時擁有top-level const與low-level const(而且兩者互相獨立)。  
+>**Example**
 ``` c++
 int i = 0;
 int *const p1 = &i;  // we can't change the value of p1; const is top-level
@@ -293,15 +292,16 @@ constexpr int *p1 = &j;      // p1 is a constant pointer to the int j
 ``` c++
 // the type of item is deduced from the type of the result of adding val1 and val2
 auto item = val1 + val2; // item initialized to the result of val1 + val2
-```
-e.g.如果`val1`與`val2`的型別`double`，則`item`的型別就是`double`。
+```  
+>**Example**  
+如果`val1`與`val2`的型別`double`，則`item`的型別就是`double`。
 如同其他type specifier，可以在`auto`中定義多個變數以及複合型別，但要注意initializer的型別*必須保持一致*:
 ``` c++
 auto i = 0, *p = &i;      // ok: i is int and p is a pointer to int
 auto sz = 0, pi = 3.14;   // error: inconsistent types for sz and pi
 ```
 #### Compound Types, `const`, and `auto`
-編譯器從`auto`得出的型別未必和initializer的型別保持一致，有時候編譯器會做一些調整來達成一般的初始化規則:  
+編譯器從`auto`得出的型別未必和initializer的型別保持一致，有時候編譯器會做一些調整來達成一般的初始化規則。  
 (1) 當我們使用reference當作initializer時，編譯器將會使用該reference所參考之物件的型別當成`auto`的type，*而非reference本身*:
 ``` c++
 int i = 0, &r = i;
