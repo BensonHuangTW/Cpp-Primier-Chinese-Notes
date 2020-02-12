@@ -48,7 +48,7 @@ int &refVal2;        // error: a reference must be initialized
 ```
 當我們定義一個reference，他會被綁訂(bind)於他的initializer而不是複製其值，而且*沒有*方法能將reference重新綁訂於另一個物件上，因此reference*一定要被初始化*。
 
-```Note```
+>**Note**  
 新標準導入了新種類的reference: rvalue reference(見13.6.1)，主要用於class內部，技術上來說當我們提及reference時指的是lvalue reference。
 
 #### A Reference Is an Alias
@@ -143,7 +143,7 @@ int main(){
  std::cout << i; 	//輸出結果為2
 }
 ```
-`Note`
+>**Note**  
 我們如果想在多個檔案共享一個`const`物件，則我們要用*extern定義它*。
 
 ### 2.4.1 Reference to `const`
@@ -204,7 +204,7 @@ const double *cptr = &pi; // ok: cptr may point to a double that is const
 double dval = 3.14;       // dval is a double; its value can be changed
 cptr = &dval;             // ok: but can't change dval through cptr
 ```
-`Tip`
+>**Tip**  
 可以把pointers to `const` 或是 reference to `const`想像成它們指向或綁定的是一個`const`物件。
 
 ### `const` pointer
