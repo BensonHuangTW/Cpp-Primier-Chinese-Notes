@@ -362,7 +362,7 @@ decltype((i)) d;    // error: d is int& and must be initialized
 decltype(i) e;      // ok: e is an (uninitialized) int
 ```
 
-##2.6 Defining Our Own Data Structure
+## 2.6 Defining Our Own Data Structure
 ### 2.6.3 Writing Our Own Header Files
 在19.7中會提到可以在函數中定義class，然而這種class的功能有限，因此通常來說，在給定的source file中，我們不會在函數裡面定義class，當class定義於函數外面，他們在該source file中只能被定義一次。為了確保不同的檔案中使用定義相同的class，通常會把class定義於標頭檔(header files)中，例如`string`類別就是定義於`string`標頭檔之中。
 標頭檔中通常包含只能被定義一次的實體，例如class definitions、`const `與 `constexpr`變數。
