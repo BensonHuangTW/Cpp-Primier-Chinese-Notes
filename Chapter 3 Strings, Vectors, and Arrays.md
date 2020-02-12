@@ -76,7 +76,7 @@ vector<vector<int>  >
 
 ### 3.3.1 Defining and Initializing vectors
 **Table 3.4: Ways to Initialize a vector**  
-![image](https://user-images.githubusercontent.com/55428505/66102606-7681cb80-e5e5-11e9-9137-3c5437734ea6.png)
+![image](https://user-images.githubusercontent.com/55428505/66102606-7681cb80-e5e5-11e9-9137-3c5437734ea6.png)  
 `vector`的默認初始化會產生一個空的`vector`:
 ``` c++
 vector<string> svec; // default initialization; svec has no elements
@@ -111,17 +111,17 @@ vector<string> svec(10, "hi!"); // ten strings; each element is "hi!"
 vector<int> ivec(10);    // ten elements, each initialized to 0
 vector<string> svec(10); // ten elements, each an empty string
 ```
-這種形式的初始化有兩種限制:
-(1)	如果`vector`的element*無法*被默認初始化，則*必須提供initial element value*。
-(2)	如果未提供初始值，必須使用direct form of initialization:
+這種形式的初始化有兩種限制:  
+(1)	如果`vector`的element*無法*被默認初始化，則*必須提供initial element value*。  
+(2)	如果未提供初始值，必須使用direct form of initialization:  
 ``` c++
 vector<int> vi = 10;   // error: must use direct initialization to supply a size
 ```
 #### List Initializer or Element Count?
-初始化規則:
-(1)	當我們使用`()`提供值，是在用這些值來*建構*(construct)物件(用來呼叫constructor，詳見第7章)。
-(2)	當我們使用`{}`代表的是如果可能的話，我們會list initialize該物件，然而當沒辦法list initialize時，則裡面的值會用來建構該物件。
-e.g.
+初始化規則:  
+(1)	當我們使用`()`提供值，是在用這些值來*建構*(construct)物件(用來呼叫constructor，詳見第7章)。  
+(2)	當我們使用`{}`代表的是如果可能的話，我們會list initialize該物件，然而當沒辦法list initialize時，則裡面的值會用來建構該物件。  
+>**Example**  
 ``` c++
 vector<int> v1(10);    // v1有10個值為0的element
 vector<int> v2{10};    // v2 有1個值為10的element
@@ -176,12 +176,12 @@ auto b = v.begin(), e = v.end(); // b and e have the same type(其型別是什�
 
 #### Iterator Operations
 **Table 3.6: Standard Container Iterator Operations**
-![image](https://user-images.githubusercontent.com/55428505/66103451-65868980-e5e8-11e9-9b2a-39717d3db0d1.png)
-可以用`==`或`!=`來比較兩個iterator是否相同，當兩個iterator相等時，*必定*為下列兩種情況:
-(1)	它們標示同一個元素。
-(2)	他們都是off-the-end iterator
+![image](https://user-images.githubusercontent.com/55428505/66103451-65868980-e5e8-11e9-9b2a-39717d3db0d1.png)  
+可以用`==`或`!=`來比較兩個iterator是否相同，當兩個iterator相等時，*必定*為下列兩種情況:  
+(1)	它們標示同一個元素。  
+(2)	他們都是off-the-end iterator  
 就像pointer一樣我們透過`*`來獲得iterator標示的元素，對一個無效或off-the-end iterator使用dereference會導致為定義的結果。
-e.g.
+>**Example**  
 假設我們想把字串的第一個字元變成大寫，可以寫下面的程式:
 ``` c++
 string s("some string");
@@ -198,7 +198,7 @@ Iterator使用increment operator(`++`)來移動至下一個元素。
 >**Note**  
 由於`end`回傳的iterator標示的並非元素，因此不能對它使用`++`或`*`。
 
-e.g.
+>**Example**  
 延續上方的例子，若我們想要把第一個字(word)變成大寫，則可以這樣寫:
 ``` c++
 // process characters in s until we run out of characters or we hit a whitespace
@@ -207,7 +207,7 @@ for  (auto it = s.begin(); it != s.end() && !isspace(*it); ++it)
 ```
 上面的`!isspace`(`*it`)在遇到空白字元時代表一個word的結束，因此會跳出`for`。
 
-`KEY CONCEPT: GENERIC PROGRAMMING`
+>**KEY CONCEPT: GENERIC PROGRAMMING**  
 上面的例子裡面我們看到在`for` *loop裡面我們用的是*`!=`*而非*`<`，這是屬於C++的程式風格，原因是在標準函式庫的容器裡面大多的iterator都沒有`<`運算子，使用`!=`的話就不用擔心了。
 
 #### Iterator Types
@@ -233,7 +233,7 @@ auto it3 = v.cbegin();  // it3 has type vector<int>::const_iterator
 ```
 #### Combining Dereference and Member Access
 當我們想要透過dereference來獲得該元素並使用它的成員時，由於運算優先權的原因，我們*必須*加上括號再用member selector(`.`)來取得該成員。
-e.g.
+>**Example**  
 假如有一個元素為`string`的`vector`，我們想要用`string`的empty成員函式來檢查`string`是否為空，假設`it`為該`vector`的iterator，則我們應該這樣做:
 ``` c++
 (*it).empty()
@@ -260,7 +260,7 @@ e.g.
 
 # 3.5 Arrays
 ### 3.5.1 Defining and Initializing Built-in Arrays
-array在宣告時，其大小必須是constant expression:
+array在宣告時，其大小必須是constant expression(見2.4.4):
 ``` c++
 unsigned cnt = 42;          // not a constant expression
 constexpr unsigned sz = 42; // constant expression
@@ -286,7 +286,7 @@ int (&arrRef)[10] = arr;  //  arrRef refers to an array of ten ints
 ### 3.5.3 Pointers and Arrays
 #### The Library begin and end Functions
 `begin`和`end`是兩個把array當成引數的函數，他們定義於`iterator`標頭檔中。並且分別回傳指向該array的第一個與最後一個元素的pointer。
-e.g.
+>**Example**  
 ``` c++
 int ia[] = {0,1,2,3,4,5,6,7,8,9}; // ia is an array of ten ints
 int *beg = begin(ia); 		 // pointer to the first element in ia
