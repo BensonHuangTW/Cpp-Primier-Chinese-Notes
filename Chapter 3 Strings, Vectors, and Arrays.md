@@ -62,17 +62,18 @@ vector<int> ivec;             // ivec holds objects of type int
 vector<Sales_item> Sales_vec; // holds Sales_items
 ```
 
-`Note`
+>**Note**  
 `vector`不是一種型別，而是模板，從`vector`產生的型別*一定要包含element的型別*。
 由於reference不是物件，因此沒有`vector` of reference，但我們可以有element本身為`vector`的`vector`:
 ``` c++
 vector<vector<string>> file;  // vector whose elements are vectors
 ```
-`WARNING`
+>**WARNING**  
 有些編譯器要求element為`vector`的`vector`在宣告時必須在`>`之間*加上空格*(較老式的宣告):
 ``` c++
 vector<vector<int>  >
 ```
+
 ### 3.3.1 Defining and Initializing vectors
 **Table 3.4: Ways to Initialize a vector**  
 ![image](https://user-images.githubusercontent.com/55428505/66102606-7681cb80-e5e5-11e9-9137-3c5437734ea6.png)
@@ -158,7 +159,7 @@ for (decltype(ivec.size()) ix = 0; ix != 10; ++ix)
 for (decltype(ivec.size()) ix = 0; ix != 10; ++ix)
     ivec.push_back(ix);  // ok: adds a new element with value ix
 ```
-`WARNING`
+>**WARNING**  
 使用subscript operator於`vector`或`string`只能用於取*已經存在*的element，*不能*用它來添加element。
 
 ## 3.4 Introducing Iterators
@@ -194,7 +195,7 @@ if (s.begin() != s.end()) { // make sure s is not empty
 
 #### Moving Iterators from One Element to Another
 Iterator使用increment operator(`++`)來移動至下一個元素。
-`Note`
+>**Note**  
 由於`end`回傳的iterator標示的並非元素，因此不能對它使用`++`或`*`。
 
 e.g.
@@ -250,7 +251,7 @@ e.g.
 
 #### Some vector Operations Invalidate Iterators
 詳見9.3.6以及5.4.3。
-`WARNING`
+>**WARNING**  
 別在使用iterators的迴圈中為容器添加新元素。
 
 ### 3.4.2 Iterator Arithmetic
