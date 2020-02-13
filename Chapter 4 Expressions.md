@@ -121,10 +121,10 @@ Two types are related if there is a **conversion** between them.
 >⇒當需要某一type的value (or object) 時，可以用跟它 related的value (or object)代替。
 
 >**Example**  
-int ival = 3.541 + 3;
-⇒C++會根據一套類型自動轉換規則將兩種type轉成共同(common)的type再求值。
+int ival = 3.541 + 3;  
+⇒C++會根據一套類型自動轉換規則將兩種type轉成共同(common)的type再求值。  
 ⇒又稱**implicit conversions**
-大多情況下，算術類型的type會盡量轉換成保持精度(precision)的type。
+大多情況下，算術類型的type會盡量轉換成保持精度(precision)的type。  
 ⇒上例的3會被轉換成double，運算結果為double，然後才initialize。故結果被轉換成6(int)來initialize ival(要配合初始化類型)。
 
 一些implicit conversions:
@@ -142,7 +142,7 @@ int ival = 3.541 + 3;
 (2) 整數與浮點數類型同時出現，則整數被轉成適當的浮點數類型。  
 
 #### Integral Promotions
-Integral promotions convert the small integral types to a larger integral type.
+Integral promotions convert the small integral types to a larger integral type.  
 ⇒如果`int`容納的下就轉`int`，否則轉`unsigned int`。e.g. bool promote to 0 or 1.
 e.g. bool, char, signed char, unsigned char, short, and unsigned short
 
@@ -194,7 +194,8 @@ int* ip = ia; // convert ia to a pointer to the first element
 (1)	使用`decltype`時。
 (2)	使用取址運算子(`&`)、`sizeof`或是`typeid`(見19.2.2)。
 (3)	使用reference來初始化array(when we initialize a reference to an
-array)時。
+array)時。  
+
 >**Example**  
 ```c++
 int (&arrRef)[10] = arr;
