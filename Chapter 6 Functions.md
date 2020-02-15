@@ -218,7 +218,7 @@ void reset(int *ip)
 (1)	使得該函數的呼叫者(caller)以為它會改變引數的值  
 (2)	可以傳入的引數類型被限縮(因為const不能轉成nonconst)  
 (3)	以上的負面效應甚至可能會被放大  
->**Exampel**  
+>**Example**  
 ``` c++
 //函數A的程式碼如下(使用reference to const傳遞引數)
 int A(const string &s1){
