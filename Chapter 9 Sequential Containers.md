@@ -139,3 +139,88 @@ equality operator使用的是元素的`==`運算子，而relational operator使�
 >**Note**  
 只有當元素的型別有定義適當的comparison operator能使用relation operator。
 
+## 9.3 Sequential Container Operations
+以下內容是專屬於sequential container的操作。
+**Table 9.5: Operations That Add Elements to a Sequential Container**  
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.5.jpg)
+ 
+### 9.3.1 Adding Elements to a Sequential Container
+除了`array`之外的函式庫容器都有動態改變容器大小的特性，Table 9.5列出了在sequential container增加元素的操作(對不同的容器效能上會有不同表現)。
+
+>**KEY CONCEPT: CONTAINER ELEMENTS ARE COPIES**  
+當我們用一個物件來初始化容器或是把它插入容器時，放進容器的是該引數物件的copy，而非物件本身。
+
+#### Using push_back
+除了`forward_list`和`array`之外的sequential container都支援`push_back`，功能為在容器的尾部增加元素:
+```c++
+// read from standard input, putting each word onto the end of container
+string word;
+while (cin >> word)
+    container.push_back(word);
+
+Using push_front
+list, forward_list以及deque支援push_front，功能為在容器的前端增加元素:
+list<int> ilist;
+// add elements to the start of ilist
+for (size_t ix = 0; ix != 4; ++ix)
+    ilist.push_front(ix); //loop結束後ilist的元素順序:3,2,1,0
+```
+
+#### Adding Elements at a Specified Point in the Container
+`vector`, `deque`, `list`和`string`支援`insert`功能(`forward_list`有特殊版本，見9.3.4)，為讓我們插入零個或多個元素到容器的任意位置中，每種版本的insert函式都接收一個iterator作為第一個引數，用來標示插入元素的位置，插入的位置為該iterator標示位置的前一個位置。
+>**Example**  
+```c++
+slist.insert(iter, "Hello!"); 	// insert "Hello!" just before iter
+slist.insert(slist.end(),”Bye!”); //Bye會是slist的最後一個元素
+```
+有些容器不支援`push_front`，但我們可以用insert來把元素放到該容器的前端:
+```c++
+vector<string> svec;
+list<string> slist;
+// equivalent to calling slist.push_front("Hello!");
+slist.insert(slist.begin(), "Hello!");
+// no push_front on vector but we can insert before begin()
+// warning: inserting anywhere but at the end of a vector might be slow
+svec.insert(svec.begin(), "Hello!");
+```
+>**WARNING**  
+雖然可以在`vector`, `deque`和`string`的任何地方插入元素，但這麼做可能會很吃效能。
+
+Inserting a Range of Elements
+另一種版本的insert可以指定插入同一個元素的數量:
+svec.insert(svec.end(), 10, "Anna"); //在尾部連續插入10個Anna
+也可以從別的容器的一部分複製元素近來，只要額外加上一對iterator來標示複製的範圍:
+vector<string> v = {"quasi", "simba", "frollo", "scar"};
+//在slist的前端插入v的末兩個元素
+slist.insert(slist.begin(), v.end() - 2, v.end());
+或者直接插入braced list的一串元素:
+slist.insert(slist.end(), {"these", "words", "will",
+                           "go", "at", "the", "end"});
+但不能再插入容器的同時又丟入一對該容器的iterator:
+// run-time error: iterators denoting the range to copy from
+// must not refer to the same container as the one we are changing
+slist.insert(slist.begin(), slist.begin(), slist.end());
+新版本的C++中，上面三種版本的insert都會回傳一個標示第一個被插入元素的iterator。
+e.g.
+list<string> 1st;
+auto iter = 1st.begin();
+while (cin >> word)
+   iter = 1st.insert(iter, word); //在此程式等同於呼叫 push_front
+
+Using the Emplace Operations
+新標準C++引入了三個新成員:emplace_front, emplace, emplace_back函式(效果對應於push_front, insert, push_back)，它們的功能是直接在容器管理的空間中直接創建物件，而非只是複製元素，當我們要呼叫emplace成員時，必須依照元素的constructor需要的引數來傳入適當的引數:
+e.g.
+// construct a Sales_data object at the end of c
+// uses the three-argument Sales_data constructor
+c.emplace_back("978-0590353403", 25, 15.99);
+// error: there is no version of push_back that takes three arguments
+c.push_back("978-0590353403", 25, 15.99);
+// ok: we create a temporary Sales_data object to pass to push_back
+c.push_back(Sales_data("978-0590353403", 25, 15.99));
+// iter refers to an element in c, which holds Sales_data elements
+c.emplace_back(); // uses the Sales_data default constructor
+c.emplace(iter, "999-999999999"); // uses Sales_data(string)
+// uses the Sales_data constructor that takes an ISBN, a count, and a price
+c.emplace_front("978-0590353403", 25, 15.99);
+
+9.3.2 Accessing Elements
