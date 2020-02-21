@@ -235,3 +235,114 @@ c.emplace(iter, "999-999999999"); // uses Sales_data(string)
 c.emplace_front("978-0590353403", 25, 15.99);
 ```
 ### 9.3.2 Accessing Elements
+**Table 9.6: Operations to Access Elements in a Sequential Container**  
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.6.jpg)
+如果容器為空，則使用access operation會導致未定義的結果。
+`front`:回傳對第一個元素的reference，所有容器皆能使用。
+`back`:回傳對最後一個元素的reference，除了forward_list以外的容器都能使用。
+>**Example**  
+```c++
+// 在呼叫back或front前要先檢查容器中是否有元素
+if (!c.empty()) {
+    // val 和 val2都是c中第一個元素的copy而非reference(原因見2.5.2)
+    auto val = *c.begin(), val2 = c.front();
+    // val3 和val4 都是c中最後一個元素的copy
+    auto last = c.end();
+	//last標示的是最後一個元素的下一個位置，要先--才能獲得最後一個元素
+    auto val3 = *(--last); // can't decrement forward_list iterators
+    auto val4 = c.back();  // not supported by forward_list
+}
+```
+#### The Access Members Return Reference
+`front`, `back`, `subscript`以及`at`回傳的是reference，如果該容器為`const`物件則會回傳reference to const，而當我們用`auto`去儲存這些函式的回傳結果時記得要定義成reference type才會取得該元素的reference:
+```c++
+if (!c.empty()) {
+    c.front()  = 42;      // assigns 42 to the first element in c
+    auto &v =  c.back();  // get a reference to the last element
+    v = 1024;             // changes the element in c
+    auto v2 =  c.back();  // v2 is not a reference; it's a copy of c.back()
+    v2 = 0;               // no change to the element in c
+}
+```
+
+#### Subscripting and Safe Random Access
+`at(n)`與subscript operator(`string`, `vector`, `deque`和`array`支援)不同的地方是它在index超過容器的合法範圍時會丟出`out_of_range`異常，後者則不會:
+```c++
+vector<string> svec; // empty vector
+cout << svec[0];     // run-time error: there are no elements in svec!
+cout << svec.at(0);  // throws an out_of_range exception
+```
+### 9.3.3 Erasing Elements
+#### The pop_front and pop_back Members
+這兩個操作回傳的是`void`，因此如果要保留該元素的值之前必須在`pop`前就存好:
+```c++
+while (!ilist.empty()) {
+    process(ilist.front()); // do something with the current top of ilist
+    ilist.pop_front();      // done; remove the first element
+}
+```
+#### Removing an Element from within the Container
+`erase`成員負責移除容器中特定位置的元素，有兩種版本:  
+(1)	傳入單一iterator，刪除該iterator所指元素。  
+(2)	傳入一對iterator，標示想要刪除的元素範圍。  
+以上兩種`erase`都會回傳一個指向最後一個被刪除元素下一個位置的iterator，也就是說如果j是i的下一個元素，則`erase(i)`會回傳一個指向j的iterator。
+>**Example**  
+```c++
+刪除list中的奇數元素，則程式碼如下:
+list<int> lst = {0,1,2,3,4,5,6,7,8,9};
+auto it = lst.begin();
+while (it != lst.end())
+    if (*it % 2)             // if the element is odd
+        it = lst.erase(it);  // erase this element
+    else
+        ++it;
+```
+**Table 9.7: erase Operations on Sequential Containers**
+ 
+我們不能對空容器做Table 9.7中的操作。
+>**Warning**  
+Table 9.7中的成員並不會檢查傳入它的引數是否合法，我們必須自己確認。
+
+#### Removing Multiple Elements
+傳入一對iterator版本的`erase`讓我們刪除給定範圍的元素:
+```c++
+// delete the range of elements between two iterators
+// returns an iterator to the element just after the last removed element
+elem1 = slist.erase(elem1, elem2); // after the call elem1 == elem2
+```
+上面程式碼中，`elem1`指向我們想刪除的第一個元素，而`elem2`是指向我們想刪除之最後一個元素的後一位。如果想刪除所有的元素，可以使用`clear`或是傳入`begin`與`end`到`erase`中:
+```c++
+slist.clear(); // delete all the elements within the container
+slist.erase(slist.begin(), slist.end()); // 與上方等價
+```
+### 9.3.4 Specialized forward_list Operations
+**Table 9.8: Operations to Insert or Remove Elements in a forward_list**  
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.8.jpg)
+
+`forward_list`有其特有的插入及移除元素的版本，原因解釋如下:  
+ elem1 → elem2 → elem3 → elem4  
+若我們要移除上圖中的elem3，則必改變elem2使之指向elem4:
+  elem1 → elem2 → elem4  
+然而由於`forward_list`是單向串列，很難找尋elem3的前一個元素，因此對於`forward_list`來說，插入與移除的動作是針對給定元素的下一個元素做改變，也因此`forward_list`沒有`insert`, `emplace`, 以及`erase`操作，而是用`insert_after`, `emplace_after`以及`erase_after`來取代，舉例來說，上圖就是呼叫`erase`來對elem2的下一個元素(elem3)做移除。為了可以對串列的第一個元素進行操作，`forward_list`另外定義了`before_begin`，回傳一個off-the-beginning iterator(指向第一個元素前的一個不存在的元素)，讓我們可以對第一個元素進行以上操作。
+>**Example**  
+舉例來說，若要移除`forward_list`中的奇數元素，可以利用追蹤一對iterator來達成(可與9.3.3的例子比較):  
+```c++
+forward_list<int> flst = {0,1,2,3,4,5,6,7,8,9};
+auto prev = flst.before_begin(); // denotes element "off the start" of flst
+auto curr = flst.begin();        // denotes the first element in flst
+while (curr != flst.end())  {        //仍有元素等待被處理
+    if (*curr % 2)                     //該元素為奇數(case(a))
+        curr = flst.erase_after(prev); // erase it and move curr
+    else {					//case(b)
+        prev = curr;        // move the iterators to denote the next
+        ++curr;           // element and one before the next element
+    }
+}
+```
+>**程式說明**  
+(1)	curr標記的是我們正在檢查的元素，prev則標記它的上一個元素。  
+(2)	由於首先檢查的是第一個元素，因此用befor_beging來初始化prev。  
+(3)	while loop有兩種case:  
+(a)	當我們找到奇數元素時，我們把prev傳給erase_after，因此被刪除的是curr標示的元素，此時把curr設為指向被刪除元素的下一個元素(由erase_after回傳)，繼續檢查下一個元素。  
+(b)	若不是奇數元素，則兩個iterator都向下移一位。  
+
