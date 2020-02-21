@@ -350,8 +350,8 @@ while (curr != flst.end())  {        //仍有元素等待被處理
 為了達成random access功能，`vector`的元素必須以相鄰的方式儲存，所以當該連續空間不夠容納新元素時，必須將全部原本的元素都搬移到新的足夠大空間去，並釋放舊空間，這會造成效能的低落，為了解決此問題，vector採取了預留空間的策略減少記憶體的重新配置，使得效能大幅提高。
 
 #### Members to Manage Capacity
-**Table 9.10. Container Size Management **  
-![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.10.jpg)
+**Table 9.10. Container Size Management**  
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.10.jpg)  
 
 我們可以利用Table 9.10的操作來對上述的配置策略做調整。`capacity`告訴我們容器在被迫配置新空間前所能容納的元素數量，而`reverse`則讓我們能告訴容器它準備要擁有多少元素，而傳入`reverse`的數必須大於`vector`當前的容量才會改變它的容量，也就是說`reverse`絕對*不會縮小*該容器所使用的空間。
 >**Note**  
@@ -402,7 +402,7 @@ auto pos = dept.find_first_not_of(numbers);
 概念:  
 adaptor在函式庫中是一個廣義的概念，有container、iterator、function adaptors等，基本上來說，它是一套*用某事物模擬另一事物行為的機制*。
 
-container adaptor接收一個已存在的容器型別並使他的行為變成像另一種型別，例如說stack adaptor接收一個sequential container並使它如一個真的stack般運作，下表為所有container adaptors共有的操作以及型別。
+container adaptor接收一個已存在的容器型別並使他的行為變成像另一種型別，例如說stack adaptor接收一個sequential container並使它如一個真的stack般運作，下表為所有container adaptors共有的操作以及型別。  
 **Table 9.17: Operations and Types Common to the Container Adaptors Type**
  ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.17.jpg) 
  
