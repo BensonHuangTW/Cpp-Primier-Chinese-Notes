@@ -198,22 +198,29 @@ vector<string> v = {"quasi", "simba", "frollo", "scar"};
 slist.insert(slist.begin(), v.end() - 2, v.end());
 ```
 或者直接插入braced list的一串元素:
+```c++
 slist.insert(slist.end(), {"these", "words", "will",
                            "go", "at", "the", "end"});
+```
 但不能再插入容器的同時又丟入一對該容器的iterator:
+```c++
 // run-time error: iterators denoting the range to copy from
 // must not refer to the same container as the one we are changing
 slist.insert(slist.begin(), slist.begin(), slist.end());
+```
 新版本的C++中，上面三種版本的insert都會回傳一個標示第一個被插入元素的iterator。
-e.g.
+>**Example**  
+```c++
 list<string> 1st;
 auto iter = 1st.begin();
 while (cin >> word)
    iter = 1st.insert(iter, word); //在此程式等同於呼叫 push_front
+```
 
-Using the Emplace Operations
-新標準C++引入了三個新成員:emplace_front, emplace, emplace_back函式(效果對應於push_front, insert, push_back)，它們的功能是直接在容器管理的空間中直接創建物件，而非只是複製元素，當我們要呼叫emplace成員時，必須依照元素的constructor需要的引數來傳入適當的引數:
-e.g.
+#### Using the Emplace Operations
+新標準C++引入了三個新成員:`emplace_front`, `emplace`, `emplace_back`函式(效果對應於`push_front`, `insert`, `push_back`)，它們的功能是直接在容器管理的空間中直接創建物件，而非只是複製元素，當我們要呼叫`emplace`成員時，必須依照元素的constructor需要的引數來傳入適當的引數:
+>**Example**  
+```c++
 // construct a Sales_data object at the end of c
 // uses the three-argument Sales_data constructor
 c.emplace_back("978-0590353403", 25, 15.99);
@@ -226,5 +233,5 @@ c.emplace_back(); // uses the Sales_data default constructor
 c.emplace(iter, "999-999999999"); // uses Sales_data(string)
 // uses the Sales_data constructor that takes an ISBN, a count, and a price
 c.emplace_front("978-0590353403", 25, 15.99);
-
-9.3.2 Accessing Elements
+```
+### 9.3.2 Accessing Elements
