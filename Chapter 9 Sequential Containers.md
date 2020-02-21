@@ -369,7 +369,7 @@ C++11後，可`用shrink_to_fit`對`deque`,`vector`或`string`發出釋放不必
 ## 9.5 Additional string Operations
 `string`提供了六種不同的搜尋函式，每種都有四個重載版本，Table 9.14列出了這些成員函式以及他們的參數形式:
 **Table 9.14. string Search Operations**  
- ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.14.jpg) 
+ ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.14.jpg)  
 每種搜尋回傳的型別為`string::size_type`，代表的是符合匹配結果處的index，如果沒有匹配成功的話，則會回傳名為`string::npos`的`static`(見7.6)成員，函式庫將它定義為`const string::size_type`型別，初始值為`-1`，但由於`string::size_type`是`unsigned`型別，因此`npos`會等於所有`string`可以有的最大大小(見2.1.2)。
 >**WARNING**  
 由於`string`的搜尋函式傳回的是`string::size_type`型別，是`unsigned`型別，也因此使用`int`或其它有號型別接收這些函式的回傳結果是不好的做法。
