@@ -422,19 +422,19 @@ stack<string, vector<string>> str_stk2(svec);
 ```
 然而adaptor會限制可實做的容器型別，規定如下:  
 (1)對所有的adaptor來說以下的容器不得使用:
-&nbsp;(a)array
-&nbsp;原因:所有的adaptor都要求容器有新增和移除元素的功能。
-&nbsp;(b)forward_list
-&nbsp;原因: :所有的adaptor都要求能增加、移除、存取容器中最後一個元素。
+&nbsp;&nbsp;(a)array
+&nbsp;&nbsp;原因:所有的adaptor都要求容器有新增和移除元素的功能。
+&nbsp;&nbsp;(b)forward_list
+&nbsp;&nbsp;原因: :所有的adaptor都要求能增加、移除、存取容器中最後一個元素。
 (5)對於stack來說:除了array與forward_list以外的容器皆可使用。  
 (6)對於queue來說:  
-&nbsp;(a)list或deque可使用。  
-&nbsp;原因:要求容器有push_back, pop_back, back操作。
-&nbsp;(b)vector不可使用。  
-&nbsp;原因同上。  
+&nbsp;&nbsp;(a)list或deque可使用。  
+&nbsp;&nbsp;原因:要求容器有push_back, pop_back, back操作。
+&nbsp;&nbsp;(b)vector不可使用。  
+&nbsp;&nbsp;原因同上。  
 (7)對於priority_queue來說:  
-&nbsp;(a)vector或deque可使用。  
-&nbsp;(b)list不可使用。  
+&nbsp;&nbsp;(a)vector或deque可使用。  
+&nbsp;&nbsp;(b)list不可使用。  
 
 #### Stack Adaptor
 **Table 9.18: Stack Operations in Additional to Those in Table 9.17**
@@ -454,6 +454,6 @@ intStack.pop(); // pop the top element, and repeat
 
 #### The Queue Adaptors
 **Table 9.19: queue, priority_queue Operations in Addition to Table 9.17**
-![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.19.jpg) 
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.19.jpg)   
 默認下，`priority_queue`的優先權是由`<`作用在元素上而得的，我們在11.2.2會提到覆蓋這個默認的方式。
 
