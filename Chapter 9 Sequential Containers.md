@@ -1,7 +1,7 @@
 # Chapter 9 Sequential Containers
 ## 9.1 Overview of the Sequential Containers
 **Table 9.1: Sequential Container Types**
-![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.1.jpg)
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.1.jpg)  
 不同的container會在增刪元素(element)與非順序存取(nonsequential access)間做不同的效能折衷(trade-off)，並且存放元素的策略不同也導致了某些操作效能的不同，舉例來說:  
 * `string`與`vector`:  
 (1)	以*連續*記憶體存放元素。  
@@ -26,7 +26,7 @@
 ## 9.2 Container Library Overview
 **Table 9.2. Container Operations**
 ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.2.1.jpg)
-![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.2.2.jpg)
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.2.2.jpg)  
 容器定義於與他們自己名稱相同的標頭檔中，且他們是class template，因此在初始化時必須提供額外資訊，大部分(但非全部)的容器都必須提供元素的型別:  
 ```c++
 list<Sales_data>   // list that holds Sales_data objects
@@ -69,7 +69,7 @@ iterator range由一對iterator(通常稱作`begin`與`end`或是`first`與`last
 
 ### 9.2.5 Assignment and swap
 **Table 9.4. Container Assignment Operations**
-![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.4.jpg)
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.4.jpg)  
 賦值相關的操作列於上表，賦值運算子會用右側運算子的元素的copy取代掉*整個*左側運算子的元素:
 ```c++
 c1 = c2;      // replace the contents of c1 with a copy of the elements in c2
@@ -236,7 +236,7 @@ c.emplace_front("978-0590353403", 25, 15.99);
 ```
 ### 9.3.2 Accessing Elements
 **Table 9.6: Operations to Access Elements in a Sequential Container**  
-![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.6.jpg)
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.6.jpg)  
 如果容器為空，則使用access operation會導致未定義的結果。
 `front`:回傳對第一個元素的reference，所有容器皆能使用。
 `back`:回傳對最後一個元素的reference，除了forward_list以外的容器都能使用。
@@ -297,8 +297,8 @@ while (it != lst.end())
     else
         ++it;
 ```
-**Table 9.7: erase Operations on Sequential Containers**
- 
+**Table 9.7: erase Operations on Sequential Containers**  
+ ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.7.jpg)  
 我們不能對空容器做Table 9.7中的操作。
 >**Warning**  
 Table 9.7中的成員並不會檢查傳入它的引數是否合法，我們必須自己確認。
@@ -317,8 +317,7 @@ slist.erase(slist.begin(), slist.end()); // 與上方等價
 ```
 ### 9.3.4 Specialized forward_list Operations
 **Table 9.8: Operations to Insert or Remove Elements in a forward_list**  
-![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.8.jpg)
-
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.8.jpg)  
 `forward_list`有其特有的插入及移除元素的版本，原因解釋如下:  
  elem1 → elem2 → elem3 → elem4  
 若我們要移除上圖中的elem3，則必改變elem2使之指向elem4:
@@ -404,7 +403,7 @@ adaptor在函式庫中是一個廣義的概念，有container、iterator、funct
 
 container adaptor接收一個已存在的容器型別並使他的行為變成像另一種型別，例如說stack adaptor接收一個sequential container並使它如一個真的stack般運作，下表為所有container adaptors共有的操作以及型別。  
 **Table 9.17: Operations and Types Common to the Container Adaptors Type**
- ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.17.jpg) 
+ ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.17.jpg)  
  
 #### Defining an Adaptor
 每個adaptor都定義兩種constructor:  
@@ -438,7 +437,7 @@ stack<string, vector<string>> str_stk2(svec);
 
 #### Stack Adaptor
 **Table 9.18: Stack Operations in Additional to Those in Table 9.17**
-![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.18.jpg) 
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.18.jpg)  
 >**Example**  
 ```c++
 stack<int> intStack;  // empty stack
