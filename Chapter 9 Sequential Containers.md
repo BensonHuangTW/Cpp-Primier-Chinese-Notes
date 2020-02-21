@@ -340,9 +340,9 @@ while (curr != flst.end())  {        //仍有元素等待被處理
 }
 ```
 >**程式說明**  
-(1)	curr標記的是我們正在檢查的元素，prev則標記它的上一個元素。  
-(2)	由於首先檢查的是第一個元素，因此用befor_beging來初始化prev。  
-(3)	while loop有兩種case:  
-(a)	當我們找到奇數元素時，我們把prev傳給erase_after，因此被刪除的是curr標示的元素，此時把curr設為指向被刪除元素的下一個元素(由erase_after回傳)，繼續檢查下一個元素。  
-(b)	若不是奇數元素，則兩個iterator都向下移一位。  
+(1)curr標記的是我們正在檢查的元素，prev則標記它的上一個元素。  
+(2)由於首先檢查的是第一個元素，因此用befor_beging來初始化prev。  
+(3)while loop有兩種case:  
+&nbsp;(a)	當我們找到奇數元素時，我們把prev傳給erase_after，因此被刪除的是curr標示的元素，此時把curr設為指向被刪除元素的下一個元素(由erase_after回傳)，繼續檢查下一個元素。  
+&nbsp;(b)	若不是奇數元素，則兩個iterator都向下移一位。  
 
