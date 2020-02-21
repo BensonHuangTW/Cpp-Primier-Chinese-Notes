@@ -186,13 +186,17 @@ svec.insert(svec.begin(), "Hello!");
 >**WARNING**  
 雖然可以在`vector`, `deque`和`string`的任何地方插入元素，但這麼做可能會很吃效能。
 
-Inserting a Range of Elements
-另一種版本的insert可以指定插入同一個元素的數量:
+#### Inserting a Range of Elements
+另一種版本的`insert`可以指定插入同一個元素的數量:
+```c++
 svec.insert(svec.end(), 10, "Anna"); //在尾部連續插入10個Anna
+```
 也可以從別的容器的一部分複製元素近來，只要額外加上一對iterator來標示複製的範圍:
+```c++
 vector<string> v = {"quasi", "simba", "frollo", "scar"};
 //在slist的前端插入v的末兩個元素
 slist.insert(slist.begin(), v.end() - 2, v.end());
+```
 或者直接插入braced list的一串元素:
 slist.insert(slist.end(), {"these", "words", "will",
                            "go", "at", "the", "end"});
