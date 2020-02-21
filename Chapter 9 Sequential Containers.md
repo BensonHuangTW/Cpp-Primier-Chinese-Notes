@@ -346,3 +346,114 @@ while (curr != flst.end())  {        //仍有元素等待被處理
 &nbsp;(a)	當我們找到奇數元素時，我們把prev傳給erase_after，因此被刪除的是curr標示的元素，此時把curr設為指向被刪除元素的下一個元素(由erase_after回傳)，繼續檢查下一個元素。  
 &nbsp;(b)	若不是奇數元素，則兩個iterator都向下移一位。  
 
+## 9.4 How a vector Grows
+為了達成random access功能，`vector`的元素必須以相鄰的方式儲存，所以當該連續空間不夠容納新元素時，必須將全部原本的元素都搬移到新的足夠大空間去，並釋放舊空間，這會造成效能的低落，為了解決此問題，vector採取了預留空間的策略減少記憶體的重新配置，使得效能大幅提高。
+
+#### Members to Manage Capacity
+**Table 9.10. Container Size Management **  
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.10.jpg)
+
+我們可以利用Table 9.10的操作來對上述的配置策略做調整。`capacity`告訴我們容器在被迫配置新空間前所能容納的元素數量，而`reverse`則讓我們能告訴容器它準備要擁有多少元素，而傳入`reverse`的數必須大於`vector`當前的容量才會改變它的容量，也就是說`reverse`絕對*不會縮小*該容器所使用的空間。
+>**Note**  
+`reserve`並不會改變容器內元素的數量，它只會影響`vector`預先配置的記憶體空間多寡。
+
+C++11後，可`用shrink_to_fit`對`deque`,`vector`或`string`發出釋放不必要記憶體空間的請求，然而它的實作卻允許*可以忽略這個請求*。
+
+#### capacity and size
+示意圖:  
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.4-1.jpg)  
+事實上，只要沒有出現超出`vector`容量的操作，`vector`必定*不會*重新配置它的元素。每種對`vector`的實作都要保證`push_back`進n個元素進初始為空`vector`的時間複雜度為O(n)。
+>**Note**  
+`vector`的實作可以自由制定自已的配置策略，但在被強迫的情況之外的話，它絕對不能配置新的記憶體空間。
+
+## 9.5 Additional string Operations
+`string`提供了六種不同的搜尋函式，每種都有四個重載版本，Table 9.14列出了這些成員函式以及他們的參數形式:
+**Table 9.14. string Search Operations**  
+ ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.14.jpg) 
+每種搜尋回傳的型別為`string::size_type`，代表的是符合匹配結果處的index，如果沒有匹配成功的話，則會回傳名為`string::npos`的`static`(見7.6)成員，函式庫將它定義為`const string::size_type`型別，初始值為`-1`，但由於`string::size_type`是`unsigned`型別，因此`npos`會等於所有`string`可以有的最大大小(見2.1.2)。
+>**WARNING**  
+由於`string`的搜尋函式傳回的是`string::size_type`型別，是`unsigned`型別，也因此使用`int`或其它有號型別接收這些函式的回傳結果是不好的做法。
+
+`find`函式回傳第一個與引數匹配的index，如果沒有匹配則回傳`npos`
+>**Example**  
+```c++
+string name("AnnaBelle");
+auto pos1 = name.find("Anna"); // pos1 == 0
+string的搜尋是有大小寫區別的:
+string lowercase("annabelle");
+pos1 = lowercase.find("Anna");   // pos1 == npos
+```
+`find_first_of`的功能則稍微不同，它尋找的是欲搜尋字串中第一個有在目標字串所包含字元的字元位置。  
+>**Example**  
+```c++
+string numbers("0123456789"), name("r2d2");
+// returns 1, i.e., the index of the first digit in name
+auto pos = name.find_first_of(numbers);
+```
+而`find_first_not_of`的功能則與`find_first_of`相反，它尋找的是欲搜尋字串中第一個不包含於目標字串所含字元的位置:  
+>**Example**  
+```c++
+string dept("03714p3");
+// returns 5, which is the index to the character 'p'
+auto pos = dept.find_first_not_of(numbers);
+```
+
+## 9.6 Container Adaptors
+概念:  
+adaptor在函式庫中是一個廣義的概念，有container、iterator、function adaptors等，基本上來說，它是一套*用某事物模擬另一事物行為的機制*。
+
+container adaptor接收一個已存在的容器型別並使他的行為變成像另一種型別，例如說stack adaptor接收一個sequential container並使它如一個真的stack般運作，下表為所有container adaptors共有的操作以及型別。
+**Table 9.17: Operations and Types Common to the Container Adaptors Type**
+ ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.17.jpg) 
+ 
+#### Defining an Adaptor
+每個adaptor都定義兩種constructor:  
+(1)default constructor(A a;):創建一個空物件。  
+(2)`A  a(c)`:接收一個容器`c`，並以複製該容器的方式初始化adaptor，舉例來說，假設`deq`是一個`deque<int>`，則我們可以用`deq`來初始化一個新的`stack`:  
+```c++
+stack<int> stk(deq); //將deq的元素複製進stk
+```
+默認下，`stack`與`queue`是用`deque`來實作的，`priority_queue`則是用`vector`，我們可以加上想要實作之容器的型別當成第二個引數來創建adaptor:
+```c++
+// empty stack implemented on top of vector
+stack<string, vector<string>> str_stk;
+// str_stk2 is implemented on top of vector and initially holds a copy of svec
+stack<string, vector<string>> str_stk2(svec);
+```
+然而adaptor會限制可實做的容器型別，規定如下:  
+(1)對所有的adaptor來說以下的容器不得使用:
+&nbsp;(a)array
+&nbsp;原因:所有的adaptor都要求容器有新增和移除元素的功能。
+&nbsp;(b)forward_list
+&nbsp;原因: :所有的adaptor都要求能增加、移除、存取容器中最後一個元素。
+(5)對於stack來說:除了array與forward_list以外的容器皆可使用。  
+(6)對於queue來說:  
+&nbsp;(a)list或deque可使用。  
+&nbsp;原因:要求容器有push_back, pop_back, back操作。
+&nbsp;(b)vector不可使用。  
+&nbsp;原因同上。  
+(7)對於priority_queue來說:  
+&nbsp;(a)vector或deque可使用。  
+&nbsp;(b)list不可使用。  
+
+#### Stack Adaptor
+**Table 9.18: Stack Operations in Additional to Those in Table 9.17**
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.18.jpg) 
+>**Example**  
+```c++
+stack<int> intStack;  // empty stack
+// fill up the stack
+for (size_t ix = 0; ix != 10; ++ix)
+    intStack.push(ix);   // intStackholds 0 ... 9 inclusive
+while (!intStack.empty()) {    // while there are still values in intStack
+    int value = intStack.top();
+    // code that uses value
+intStack.pop(); // pop the top element, and repeat
+}
+```
+
+#### The Queue Adaptors
+**Table 9.19: queue, priority_queue Operations in Addition to Table 9.17**
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.19.jpg) 
+默認下，`priority_queue`的優先權是由`<`作用在元素上而得的，我們在11.2.2會提到覆蓋這個默認的方式。
+
