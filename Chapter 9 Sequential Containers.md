@@ -338,7 +338,7 @@ while (curr != flst.end())  {        //仍有元素等待被處理
     }
 }
 ```
->**程式說明**  
+**程式說明**  
 (1)curr標記的是我們正在檢查的元素，prev則標記它的上一個元素。  
 (2)由於首先檢查的是第一個元素，因此用befor_beging來初始化prev。  
 (3)while loop有兩種case:  
