@@ -65,3 +65,117 @@ while (cin >> word)
 if (exclude.find(word) == exclude.end())
 ```
 當我們呼叫`find`會回傳一個iterator，如果給定的`word`(也就是key)在`set`裡面，則該iterator指向該key；反之如果不在`set`中，則該iterator為off-the-end iterator，因此在此例中如果`word`不在`exclude`中則會更新該`word`的counter值。
+
+## 11.2 Overview of the Associative Containers
+associative container不支援sequential-container position-specific operation，例如`push_back`，也不支援接收一個元素及一個count為引數的`insert`，而且associative container的iterator是雙向(**bidirectional iterator**)的(見10.5.1)。
+
+### 11.2.1 Defining an Associative Container
+每個associative container都有default constructor來創建空的容器，也可以用別的相同型別容器或是給定範圍的值(只要能轉換成該型別)來初始化，新標準下也能list initialize元素:  
+```c++
+map<string, size_t> word_count;  // empty
+// list initialization
+set<string> exclude = {"the", "but", "and", "or", "an", "a",
+                                              "The", "But", "And", "Or", "An",
+"A"};
+// three elements; authors maps last name to first
+map<string, string> authors = { {"Joyce", "James"},
+                                {"Austen", "Jane"},
+								{"Dickens", "Charles"} };
+```
+當初始化`map`，我們必須同時在花括號內提供一對key(第一個值)跟value(第二個值):
+```c++
+{key, value}
+```
+
+#### Initializing a multimap or multiset
+`map`或`set`的key不能重複，然而multimap和multiset沒有這種限制，也就是說對於同一個key來說可以有多個元素，就像字典中的單字對應多個定義。
+>**Example**  
+下面程式用同一個`vector<int>`來分別初始化`set`跟`multiset`，且`vector`中的
+元素為0~9各重複出現一次:
+```c++
+// define a vector with 20 elements, holding two copies of each number from 0 to 9
+vector<int> ivec;
+for (vector<int>::size_type i = 0; i != 10; ++i) {
+    ivec.push_back(i);
+    ivec.push_back(i);  // 同一個數字複製兩次進ivec
+}
+// iset holds unique elements from ivec; miset holds all 20 elements
+set<int> iset(ivec.cbegin(), ivec.cend());
+multiset<int> miset(ivec.cbegin(), ivec.cend());
+cout << ivec.size() << endl;    // prints 20
+cout << iset.size() << endl;    // prints 10，因為不能有重複的key
+cout << miset.size() << endl;   // prints 20，可以有重複的key
+```
+
+### 11.2.2 Requirements on Key Type
+對於ordered container(`map`, `multimap`, `set`以及`multiset` )，key的型別一定要定義能夠比較元素大小的方式，默認下是用`<`來比較。
+
+#### Key Types for Ordered Containers
+我們可以提供別的操作來取代<作為比較的依據，但其大小關係必須滿足下列的性質:  
+* 若k1<k2，則k2≮k1(asymmetric)。
+* 若k1<k2且k2<k3，則k1<k3(transitive)。  
+* 若k1≮k2且k2≮k1，則k1與k2為等價的，且等價具遞移性。  
+若兩個key為等價的，則容器會把它們視為相等，對應的value只會有一個，使用任一個key都能存取該value。  
+
+#### Using a Comparison Function for the Key Type
+如果使用我們自行定義的函式來取代`<`，則定義容器的語法如下:  
+```c++
+容器種類<key, (value,) 函式的pointer> name;
+```
+>**Example**  
+假設我們要定義元素型別`Sales_data`的`multiset`，並且自行定義比較函式如下:  
+```c++
+bool  compareIsbn(const  Sales_data  &lhs,  const  Sales_data
+&rhs)
+{
+    return lhs.isbn() < rhs.isbn();
+}
+```
+則在創立容器時，要額外提供指向`compareIsbn`的pointer:
+```c++
+// bookstore can have several transactions with the same ISBN
+// elements in bookstore will be in ISBN order
+multiset<Sales_data, decltype(compareIsbn)*> 
+    bookstore(compareIsbn);
+```
+注意的是`*`是*必加*的，但`compareIsbn`前面不加`&`也可以(見6.7)。
+
+### 11.2.3 The pair Type
+`pair`為標準函式庫定義於`utility`標頭檔的型別，是一個模板，因此在創建它時要提供兩個型別名稱(可以不同):  
+```c++
+pair<string, string> anon;       // holds two strings
+pair<string, size_t> word_count; // holds a string and an size_t
+pair<string, vector<int>> line;  // holds string and vector<int>
+```
+`pair`的default constructor會value initialize它的data member，因此上面的`word_count`的`size_t`成員值會是`0`，`string`成員的值為空字串。
+我們也可以提供initializer給data member:
+```
+pair<string, string> author{“James”, “Joyce”}; 
+//若想用多個引數的constructor或是default constructor，
+//則要把引數列在內層{}裡面。
+pair的成員為public，名稱為first跟second，可用member access notation存取。
+```
+#### A Function to Create pair Objects
+如果函式要回傳`pair`的話，在新標準下可以使用list initialize來回傳值:  
+```c++
+pair<string, int>
+process(vector<string> &v)
+{
+     // process v
+     if (!v.empty())
+         return {v.back(), v.back().size()}; // list initialize(不用標pair型別)
+     else
+         return pair<string, int>(); // explicitly  constructed  return
+value
+}
+```
+不過在舊的標準中我們不能這樣用，可以用下面的方式替代:
+```c++
+if (!v.empty())
+    return pair<string, int>(v.back(), v.back().size());
+```
+或者也能用函式庫提供的`make_pair`函式來用引數產生適當型別的新`pair`:
+```c++
+if (!v.empty())
+     return make_pair(v.back(), v.back().size());
+```
