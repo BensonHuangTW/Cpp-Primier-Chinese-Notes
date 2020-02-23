@@ -25,7 +25,7 @@ int ia[] = {27, 210, 12, 47, 109, 83};
 int val = 83;
 int* result = find(begin(ia), end(ia), val); //begin與end函式見3.5.3
 ```
-此外，我們不一定要傳遞整個容器的範圍給find，也可以查找某個子範圍，但要注意第二個iterator標示的是該範圍最後一個元素的下一個元素(one past the last element of the subrange)。
+此外，我們不一定要傳遞整個容器的範圍給`find`，也可以查找某個子範圍，但要注意第二個iterator標示的是該範圍最後一個元素的下一個元素(one past the last element of the subrange)。
 >**Example**  
 以下的`find`會查找的元素為`ia[1]`,`ia[2]`以及`i[3]`:
 ```c++
@@ -161,4 +161,23 @@ void elimDups(vector<string> &words)
     words.erase(end_unique, words.end());
 }
 ```
-
+>**程式說明**  
+>假設`words`原本的內容為:  
+>|the|quick|red|fox|jumps|over|the|slow|red|turtle|
+>|---|-----|---|---|-----|----|---|----|---|------|
+>
+>(1)	經過`sort`排序後，`words`內容變成:  
+>
+>|Fox|jumps|over|quick|red|red|slow|the|the|turtle|  
+>|---|-----|----|-----|---|---|----|---|---|------|
+>
+>(2)	`unique`會把input range內相鄰值重複的元素移走，並回傳一個iterator代表最後一個`unique`的元素的下一位置:
+>
+>|Fox|jumps|over|quick|red|slow|the|turtle|???*(end_unique代表位置)*|???|
+>|---|-----|----|-----|---|----|---|------|------------------------|---|
+>  
+>(在該`end_unique`iteartor後的元素仍然存在，但我們不知道它們的值為何)  
+>(3)	最後再用容器本身的把不必要的元素(`end_unique`後)剔除，最後獲得:  
+>
+>|Fox|jumps|over|quick|red|slow|the|turtle|
+>|---|-----|----|-----|---|----|---|------|
