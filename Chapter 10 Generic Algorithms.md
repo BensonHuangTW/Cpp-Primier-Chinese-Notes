@@ -239,5 +239,5 @@ auto f = [] { return 42; };
 cout << f() << endl;  // prints 42
 ```
 忽略lambda中的`[]`以及參數列表等同於將它們標示為空，忽略回傳型別的話，則會自動從function body推斷回傳型別。
->>**Note**  
+>**Note**  
 如果lambda的function body不是單一的`return`語句的話，也沒指定回傳型別的話，則回傳的是`void`。(如果想要回傳的不是`void`，就必須用trailing return標明回傳型別)
