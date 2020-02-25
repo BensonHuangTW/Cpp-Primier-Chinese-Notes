@@ -241,3 +241,86 @@ cout << f() << endl;  // prints 42
 忽略lambda中的`[]`以及參數列表等同於將它們標示為空，忽略回傳型別的話，則會自動從function body推斷回傳型別。
 >**Note**  
 如果lambda的function body不是單一的`return`語句的話，也沒指定回傳型別的話，則回傳的是`void`。(如果想要回傳的不是`void`，就必須用trailing return標明回傳型別)
+
+#### Passing Arguments to a Lambda
+lambda不能有默認引數，因此呼叫lambda時必須傳入和參數個數相同的引數，一旦參數被初始化，function body也開始執行。
+>**Example**  
+承10.3.1中的例子，`isShorter`函式的行為可用以下的lambda表達:
+```c++
+[](const string &a, const string &b)
+{ return a.size()<b.size();}
+```
+空的capture list表示這個lambda不會用到任何它所處函式中的區域變數。我們的`stable_sort`可以利用lambda改寫如下:
+```c++
+//用size來做為排序依據，但維持相同size字串的原先順序:
+Stable_sort(words.begin(), words.end(), 
+[](const string&a, const string &b)
+{ return a.size() < b.size();});
+```
+當`stable_sort`需要比對兩個元素時，就會呼叫給定的lambda expression。
+
+#### Using the Capture List
+如果lambda在函式內，而且想使用該函式(稱做surrounding function)內的某些區域變數的話，就必須將這些變數納入capture list中才能使用。
+>**Example**  
+回到本小節最初的問題，作為一個例子，假設我們想要把經過上例程式排序後的序列中大於某個長度的字串都印出來，則可以使用`find_if`演算法，它接收一對標定範圍的iterator，第三個引數則是一個predicate，它會呼叫predicate在每個元素上，並且一旦碰到predicate回傳非0值的第一個元素，`find_if`就會回傳指向該元素的iterator(若都沒有則回傳end iterator)。然而該predicate必須為unary predicate，因此我們不能傳入額外的參數標示任意的篩選長度，這時我們就能利用capture list來導引lambda取得額外需要的變數了，在此例中，lambda會捕捉`sz`這個變數以及一個`string`參數，並拿該`string`的長度和`sz`作比較:
+```c++
+[sz](const string &a)
+    { return a.size() >= sz; };
+如果沒有在capture list放入sz，則會導致程式無法編譯:
+// error: sz not captured
+[](const string &a)
+    { return a.size() >= sz; };
+```
+
+#### Calling find_if
+使用上面的lambda，我們可以找到指向第一個長度至少為`sz`字串的iterator(如果沒有的話會回傳`word.end()`的copy):
+```c++
+// get an iterator to the first element whose size() is >= sz
+auto wc = find_if(words.begin(), words.end(),
+            [sz](const string &a)
+                { return a.size() >= sz; });
+```                
+我們可以用`find_if`回傳的iterator來計算有多少個元素在該iterator與`words`的尾端之間:
+```c++
+/ compute the number of elements with size >= sz
+auto count = words.end() - wc;
+cout << count << " " << make_plural(count, "word", "s") //使用6.3.2中的函式
+     << " of length " << sz << " or longer" << endl;
+```
+
+#### The for_each Algorithm
+最後一部分是把`words`中長度大於`sz`的字串印出來，我們使用`for_each`，它接收一個callable object並把每個input range中的元素拿來呼叫它:
+```c++
+// compute the number of elements with size >= sz
+auto count = words.end() - wc;
+cout << count << " " << make_plural(count, "word", "s")
+     << " of length " << sz << " or longer" << endl;
+```     
+在此例中，capture list為空，這是因為我們只用它來取得定義在surrounding function中的nonstatic變數，而lambda可以直接使用定義於該surrounding function外部的名稱，因此`cout`(定義於`iostream`標頭檔)是可以直接被使用的。
+
+#### Putting It All Together
+綜合以上的功能，我們把它們聚集起來成一個函式:
+```c++
+void biggies(vector<string> &words,
+             vector<string>::size_type sz)
+{
+        elimDups(words);  // put  words  in  alphabetical  order  and  remove
+duplicates
+    // sort words by size, but maintain alphabetical order for words of the same size
+    stable_sort(words.begin(), words.end(),
+                [](const string &a, const string &b)
+                  { return a.size() < b.size();});
+    // get an iterator to the first element whose size() is >= sz
+    auto wc = find_if(words.begin(), words.end(),
+                [sz](const string &a)
+                    { return a.size() >= sz; });
+    // compute the number of elements with size >= sz
+    auto count = words.end() - wc;
+    cout << count << " " << make_plural(count, "word", "s")
+         << " of length " << sz << " or longer" << endl;
+    // print words of the given size or longer, each one followed by a space
+    for_each(wc, words.end(),
+             [](const string &s){cout << s << " ";});
+    cout << endl;
+}
+```
