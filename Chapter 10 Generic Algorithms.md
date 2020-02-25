@@ -181,3 +181,63 @@ void elimDups(vector<string> &words)
 >
 >|Fox|jumps|over|quick|red|slow|the|turtle|
 >|---|-----|----|-----|---|----|---|------|
+
+## 10.3 Customizing Operations
+很多演算法都會比較輸入序列的元素大小，當我們不想使用默認下的`<`或是`==`運算子來進行比較時，函式庫也定義了這些演算法的另一種版本，讓我們能夠提供自己的操作來取代默認的運算子。
+### 10.3.1 Passing a Function to an Algorithm
+假設我們想印出`vector`經過上一個例子的`elimDups`呼叫後的樣子，但是想以`word`的長度優先作為排序依據，再以字母順序來排序相同長度的`word`，因此我們必須使用另一種重載版本的`sort`，它接收第三個參數，稱作**predicate**。
+
+>**Predicates**  
+一個predicate是一個可以被呼叫並且回傳一個可以當成條件式的expression，函式庫演算法可使用的predicate不是unary predicate(單一參數)就是binary predicate(兩個版本)，演算法會以input range中的元素來呼叫給定的predicate，也因此元素型別必須能夠轉換成該predicate的參數型別。
+>**Example**  
+使用`word`長度來作為排序`vector<string>`的依據:
+```c++
+// comparison function to be used to sort by word length
+bool isShorter(const string &s1, const string &s2)
+{
+    return s1.size() < s2.size();
+}
+// sort on word length, shortest to longest
+sort(words.begin(), words.end(), isShorter);
+```  
+#### Sorting Algorithms
+stable sort會保持同樣大小的元素在原先的順序。
+>**Example**  
+接續本節開頭的想法，若我們想以`word`的長度優先作為排序依據，再以字母順序來排序相同長度的`word`，就可以呼叫`stable_sort`來將原本依照字母順序排序的內容進行`word`長度的排序，而不改變同樣長度`word`原先的排序:
+```c++
+elimDups(words); // put words in alphabetical order and remove duplicates
+// resort by length, maintaining alphabetical order among words of the same length
+stable_sort(words.begin(), words.end(), isShorter);
+for (const auto &s : words)  // no need to copy the strings
+    cout << s << " ";  // print each element separated by a space
+cout << endl;
+如果我們執行上方的程式碼於10.2.3的vector，會得到以下輸出:
+fox red the over slow jumps quick turtle
+```
+### 10.3.2 Lambda Expression
+演算法雖然可以利用predicate來放入我們自定義的處理方式，然而卻限制了predicate引數的數量及型別，但有時我們會需要額外的引數來進行處理，要解決這種問題我們可以引入另一種功能，見下方。
+
+#### Introducing Lambdas
+我們可以傳入任何種類的callable object給演算法，只要物件或是expression是可以使用call operator的話，就稱之是callable。以下為callable的四種類型:  
+(1)	函式。  
+(2)	函式指標。  
+(3)	重載call operator的class(見14.8)。  
+(4)	lambda expression。  
+一個lambda expression代表了程式碼中的一個callable單元，可以想成是一個沒有名子的`inline`函式，其格式如下:  
+```c++
+[capture list]  (parameter list)  -> return type  { function body }
+```
+capture list :位於包覆該lambda expression函式內的區域變數列表(可為空)。  
+parameter list、return type以及function body :與一般的函式相同。  
+與一般函式不同的點是，lambda*必須使用trailing return*(見6.3.3)來標明它的回傳型別。    
+我們可以忽略參數列表跟回傳型別，但是一定要包含capture list跟function body:  
+```c++
+auto f = [] { return 42; };
+```
+在此我們定義了`f`為一個callable object，接收0個參數並回傳`42`，我們以呼叫函式的方式來呼叫一個lambda:
+```c++
+cout << f() << endl;  // prints 42
+```
+忽略lambda中的`[]`以及參數列表等同於將它們標示為空，忽略回傳型別的話，則會自動從function body推斷回傳型別。
+Note
+如果lambda的function body不是單一的`return`語句的話，也沒指定回傳型別的話，則回傳的是`void`。(如果想要回傳的不是`void`，就必須用trailing return標明回傳型別)
