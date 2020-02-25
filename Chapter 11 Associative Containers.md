@@ -313,7 +313,7 @@ map <string, size_t> word_count; // empty map
 // insert a value-initialized element with key Anna; then assign 1 to its value
 word_count["Anna"] = 1;
 ```
-**程式講解**
+**程式講解**  
 (1)	首先會搜尋`word_count`有沒有key值為Anna的元素，此例中沒有。  
 (2)	於是創建一個key-value `pair`插入`word_count`中，key為一個值為`Anna`的`const string`，value被value initialize為`0`。  
 (3)	該value被賦值成`1`。  
