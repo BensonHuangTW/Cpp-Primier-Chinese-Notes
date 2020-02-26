@@ -102,7 +102,7 @@ vector<int> vec;  // empty vector
 fill_n(vec.begin(), 10, 0);
 ```
 
-#### Introducing back_inserter
+#### Introducing `back_inserter`
 一個確保有足夠元素提供給演算法的方法是使用**insert iterator**(更詳細的介紹在10.4.1)，它是一個可以增加容器元素的iterator，在這裡我們先使用定義於iterator標頭檔的`back_iterator`於改寫容器的演算法中，它接收一個對容器的reference並回傳一個綁定於該容器的insert_iterator，透過該iterator賦值它會呼叫`push_back`來新增擁有該值的元素進該容器。
 >**Example**  
 ```c++
@@ -272,7 +272,7 @@ Stable_sort(words.begin(), words.end(),
     { return a.size() >= sz; };
 ```
 
-#### Calling find_if
+#### Calling `find_if`
 使用上面的lambda，我們可以找到指向第一個長度至少為`sz`字串的iterator(如果沒有的話會回傳`word.end()`的copy):
 ```c++
 // get an iterator to the first element whose size() is >= sz
@@ -288,7 +288,7 @@ cout << count << " " << make_plural(count, "word", "s") //使用6.3.2中的函�
      << " of length " << sz << " or longer" << endl;
 ```
 
-#### The for_each Algorithm
+#### The `for_each` Algorithm
 最後一部分是把`words`中長度大於`sz`的字串印出來，我們使用`for_each`，它接收一個callable object並把每個input range中的元素拿來呼叫它:
 ```c++
 // compute the number of elements with size >= sz
@@ -324,3 +324,79 @@ duplicates
     cout << endl;
 }
 ```
+
+### 10.3.3 Lambda Captures and Returns
+當我們定義一個lambda時，編譯器會產生一個新class(未命名)來與該lambda對應(詳見14.8.1)，當我們將某個lambda傳入函式時，我們同時定義了一個新的型別以及一個該型別的物件，使用`auto`的時候也是。默認下，由lambda產生的class會包含data member來對應該lambda捕捉的變數，並且該data member在lambda物件被創建時被初始化。
+
+#### Capture by Value
+就和函式參數的傳遞一樣，我們可以用兩種方式來捕捉變數:by value以及by reference。
+就像是by value的參數傳遞，必須確保該變數能夠被複製，但和參數不同的是該被捕捉變數的值在該lambda被創建時就被複製了，而不是在lambda被呼叫時:
+```c++
+void fcn1()
+{
+    size_t v1 = 42;  // local variable
+    // copies v1 into the callable object named f
+    auto f = [v1] { return v1; };
+    v1 = 0; //不會影響到f被呼叫時v1的值
+    auto j = f(); // j is 42; f stored a copy of v1 when we created it
+}
+```
+
+#### Capture by Reference
+我們也可以用by reference的方式捕捉變數(reference capture):
+```c++
+void fcn2()
+{
+    size_t v1 = 42;  // local variable
+    // the object f2 contains a reference to v1
+    auto f2 = [&v1] { return v1; };
+    v1 = 0;
+    auto j = f2(); // j is 0; f2 refers to v1; it doesn't store it
+}
+```
+reference capture和reference return有相同的問題(見6.3.2)，我們確保注意那個被參考的物件在該lambda在執行的時候還存在，reference capture有時候是必要的，例如`ostream`物件不能被複製，因此要使用reference capture:
+```c++
+void biggies(vector<string> &words,
+             vector<string>::size_type sz,
+             ostream &os = cout, char c = ' ')
+{
+    // code to reorder words as before
+    // statement to print count revised to print to os
+    for_each(words.begin(), words.end(),
+             [&os, c](const string &s) { os << s << c; });
+}
+```
+上面的`c`跟`os`在該lambda被執行的時候都存在，因此沒有問題。
+我們也可以從函數回傳一個lambda，該函數可以直接回傳一個callable object或者data member有callable object的class物件，同樣要注意的是該lambda不能有reference captures(因為它會參考該函式內的local object然而在函式終止時會被銷毀，因此會變成是參考一個不存在的物件)。
+>**WARNING**  
+當我們用by reference的方式捕捉變數時，必須確保該變數在lambda被執行時還是存在的。  
+>**ADVICE: KEEP YOUR LAMBDA CAPTUREs SIMPLE**  
+當我們捕捉pointer, iterator，或是用by reference來捕捉變數時，必須確保變數在lambda被執行時還是存在的，此外還必須注意另一點:變數的捕捉與lambda的執行可能是有間隔的，必須留意這段間隔中的code可能會改變這些變數的值，造成我們預想之外的效果，綜上所述，我們應該盡可能的減少被捕捉的變數，並且盡量避免捕捉pointer或是reference。
+
+#### Implicit Captures
+如果我們想使用surrounding function的區域變數，但又不想要清楚列在capture list內(explicit captures)的話，可以在capture list裡面使用&或=(implicit capture):  
+(1)	`&`:告訴編譯器用by reference的方式捕捉變數。  
+(2)	`=`:告訴編譯器用by value的方式捕捉變數。  
+>**Example**  
+```c++
+// sz implicitly captured by value
+wc = find_if(words.begin(), words.end(),
+             [=](const string &s)
+                { return s.size() >= sz; });
+```
+如果我們想要用by value的方式捕捉某些變數，但其它的變數想以by reference方式捕捉，則可以混合implicit capture跟explicit capture:
+```c++
+void biggies(vector<string> &words,
+             vector<string>::size_type sz,
+             ostream &os = cout, char c = ' ')
+{
+    // other processing as before
+    // os implicitly captured by reference; c explicitly captured by value
+    for_each(words.begin(), words.end(),
+             [&, c](const string &s) { os << s << c; });
+    // os explicitly captured by reference; c implicitly captured by value
+    for_each(words.begin(), words.end(),
+             [=, &os](const string &s) { os << s << c; });
+}
+```
+當我們混合implicit capture跟explicit capture時，capture list的第一項一定要是`&`或是`=`，它代表默認下的capturer模式(by reference 或是 by value)，且後方的explicit capture一定要使用另一種捕捉模式(e.g.假如是`&`，則後面都不能加`&`)。
