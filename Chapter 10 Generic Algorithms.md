@@ -402,3 +402,29 @@ void biggies(vector<string> &words,
 當我們混合implicit capture跟explicit capture時，capture list的第一項一定要是`&`或是`=`，它代表默認下的capturer模式(by reference 或是 by value)，且後方的explicit capture一定要使用另一種捕捉模式(e.g.假如是`&`，則後面都不能加`&`)。  
 **Table 10.1: Lambda Capture List**  
 ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch10/10.1.jpg)
+#### Mutable Lambdas
+默認下，lambda不能改變由by value複製過來之變數的值，如果要改變的話，必須要在parameter list後面加上關鍵字mutable，而且不能省略parameter list:
+```c++
+void fcn3()
+{
+    size_t v1 = 42; // local variable
+    // f can change the value of the variables it captures
+    auto f = [v1] () mutable { return ++v1; };
+    v1 = 0;
+    auto j = f(); // j is 43
+}
+```
+至於用by reference方式捕捉的變數能否能改變則只取決於它參考的對象到底是`const`還是non`const`型別:
+```c++
+void fcn4()
+{
+    size_t v1 = 42;  // local variable
+    // v1 is a reference to a non const variable
+    // we can change that variable through the reference inside f2
+    auto f2 = [&v1] { return ++v1; };
+    v1 = 0;
+    auto j = f2(); // j is 1
+}
+```
+
+
