@@ -399,4 +399,6 @@ void biggies(vector<string> &words,
              [=, &os](const string &s) { os << s << c; });
 }
 ```
-當我們混合implicit capture跟explicit capture時，capture list的第一項一定要是`&`或是`=`，它代表默認下的capturer模式(by reference 或是 by value)，且後方的explicit capture一定要使用另一種捕捉模式(e.g.假如是`&`，則後面都不能加`&`)。
+當我們混合implicit capture跟explicit capture時，capture list的第一項一定要是`&`或是`=`，它代表默認下的capturer模式(by reference 或是 by value)，且後方的explicit capture一定要使用另一種捕捉模式(e.g.假如是`&`，則後面都不能加`&`)。  
+**Table 10.1: Lambda Capture List**  
+![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch10/10.1.jpg)
