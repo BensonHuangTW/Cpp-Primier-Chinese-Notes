@@ -426,5 +426,55 @@ void fcn4()
     auto j = f2(); // j is 1
 }
 ```
+### 10.3.4 Binding Arguments
+lambda expression在只需用到該運算一兩次的時候很有用，但如果我們會再許多地方用到時，我們應該定義的是函式，然而這樣就失去了lambda捕捉區域變數的功能，因此就再次碰到10.3.2所遇到的問題。
+
+#### The Library bind Function
+為了解決上述的問題，我們可以使用一個C++11函式庫新增的bind函式，定義於`functional`標頭檔，`bind`可以想成是一個廣用的function adaptor(見9.6)，它接收一個callable object並且產生一個新的callable來”配接(adapt)”原本物件的parameter list，其形式為:
+```c++
+auto newCallable = bind(callable, arg_list);
+```
+其中`newCallable`本身是被產生的新callable，而`arg_list`則是以逗號做區隔的引述列表，用來對應callable的參數，當`newCallable`被呼叫的時候，`newCallable`會以`arg_list`的引數呼叫`callable`，而在`arg_list`中可能會有名稱為`_n`的引數(n為整數)，這種引數被稱作placehoder，用來代表`newCallable`的參數，其中`_1`代表`newCallable`的第一個參數，`_2`是第二個，以此類推。
+
+#### Binding the sz Parameter of check_size
+假設我們有下面的函式:
+```c++
+bool check_size(const string &s, string::size_type sz)
+{
+    return s.size() >= sz;
+}
+```
+我們不能直接將它傳入`find_if`(因為它不是unary predicate)，因此我們用`bind`來產生另一個callable object用來間接呼叫`check_size`:
+```c++
+// check6 is a callable object that takes one argument of type string
+// and calls check_size on its given string and the value 6
+auto check6 = bind(check_size, _1, 6);
+```
+>**說明**  
+在此例中，對`bind`的呼叫只有一個placehoder，也因此`check6`只會接收一個引數，該placehoder出現在`arg_list`的第一個位置，所以會對應到`check_size`的第一個參數，所以說`check6`的參數型別為`const string&`，而`arg_list`的第二個引數為值`6`，它會被綁定到`check_size`的第二個參數:
+```c++
+string s = "hello";
+bool b1 = check6(s);  // check6(s) calls check_size(s, 6)
+使用bind我們可以把原本lambda版本的find_if呼叫改寫為使用check_size的版本:
+auto wc = find_if(words.begin(), words.end(),
+             bind(check_size, _1, sz));
+```
+當`find_if`呼叫`bind`產生的callable object時，它會用`words`裡面的`string`來呼叫該object，接著再用給定的`string`跟`sz`間接呼叫`check_size`。
+
+#### Using placeholders Names
+`_n`名稱被定義於名為`placeholders`的命名空間中，該命名空間被定義於`std`命名空間裡，當我們要使用這些名稱時，必須先經過宣告:
+```c++
+using std::placeholders::_1;
+```
+以上宣告表示我們正在使用定義於placeholder命名空間裡的名稱`_1`，除了逐一宣告每個placeholder的名稱外，我們也可以使用另一種形式(詳見18.2.2):
+```c++
+using namespace namespace_name;
+```
+以上讓在`namespace_name`中定義的名稱都可以被使用，舉上面的例子:
+```c++
+using namespace std::placeholders;
+```
+使得所有`placeholders`定義的名稱都能被使用，其中`placeholders`命名空間與`bind`一同被定義於`functional`標頭檔中。
+
 
 
