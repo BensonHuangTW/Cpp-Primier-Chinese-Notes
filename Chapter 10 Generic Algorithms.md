@@ -476,5 +476,48 @@ using namespace std::placeholders;
 ```
 使得所有`placeholders`定義的名稱都能被使用，其中`placeholders`命名空間與`bind`一同被定義於`functional`標頭檔中。
 
+#### Arguments to bind
+>**Example**  
+>假設`f`是一個有五個參數的callable object，考慮以下對`bind`的呼叫:
+>```c++
+>// g is a callable object that takes two arguments
+>auto g = bind(f, a, b, _2, c, _1);
+>```
+>當我們呼叫g時，其間接呼叫f的參數對應如下圖所示:
+>```c++
+>g(_1, _2)
+>
+>f(a, b, _2, c, _1)
+>```
+>也就是說當我們呼叫`g(X, Y)`，會間接呼叫`f(a, b, Y, c, X)`。
+
+#### Binding Reference Parameters
+默認下，傳入`bind`的非placeholder引數會以copy的方式進入`bind`所回傳的callable object，因此當我們需要pass by reference時，我們必須使用函式庫提供的`ref`函式。
+>**Example**  
+>原先我們用lambda來以by reference的方式捕捉一個ostream:
+>```c++
+>// os is a local variable referring to an output stream
+>// c is a local variable of type char
+>for_each(words.begin(), words.end(),
+>         [&os, c](const string &s) { os << s << c; });
+>```
+>假設我們想用一個函式做相同的工作:
+>```c++
+>ostream &print(ostream &os, const string &s, char c)
+>{
+>    return os << s << c;
+>}
+>```
+>然而我們不能直接使用`bind`來取代對`os`的捕捉:
+>```c++
+>// error: os不能被複製
+>for_each(words.begin(),  words.end(),  bind(print,  os,  _1,  '
+>'));
+>```
+>這是因為`bind`複製了它的引數，然而`ostream`不能被複製，因此我們使用`ref`函式:
+>```c++
+>for_each(words.begin(), words.end(),
+>         bind(print, ref(os), _1, ' '));
+>此外如果我們想使用reference to const的話，可使用cref函式，它和ref都定義於functional標頭檔中。
 
 
