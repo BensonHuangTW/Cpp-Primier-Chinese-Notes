@@ -176,6 +176,7 @@ auto b = v.begin(), e = v.end(); // b and e have the same type(其型別是什�
 
 #### Iterator Operations
 **Table 3.6: Standard Container Iterator Operations**
+
 ![image](https://user-images.githubusercontent.com/55428505/66103451-65868980-e5e8-11e9-9b2a-39717d3db0d1.png)  
 可以用`==`或`!=`來比較兩個iterator是否相同，當兩個iterator相等時，*必定*為下列兩種情況:  
 (1)	它們標示同一個元素。  
