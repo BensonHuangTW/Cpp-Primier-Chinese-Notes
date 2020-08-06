@@ -374,7 +374,7 @@ int main(int argc, char *argv[]){
 ```
 則將其編譯成執行檔後在該目錄command line輸入:
 ``` linux
-Prog –d –o ofile data 0 
+/.prog –d –o ofile data0 
 ```
 所得到的輸出為:
 ``` linux
