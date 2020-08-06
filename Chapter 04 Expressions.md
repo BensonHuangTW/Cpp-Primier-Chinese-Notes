@@ -13,6 +13,7 @@ bitwise operator以整數型別作為運算元，在17.2會看到這些運算子
 `WARNING`
 既然無法保證signed bit會怎麼被處理，使用bitwise operator的時候*強烈建議*使用unsigned型別。  
 **Table 4.3. Bitwise Operators (Left Associative)**
+
 ![image](https://user-images.githubusercontent.com/55428505/66105133-26a70280-e5ed-11e9-8a5a-5e431c6ba58b.png)
 
 #### Bitwise Shift Operators
