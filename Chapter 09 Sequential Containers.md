@@ -25,6 +25,7 @@
 
 ## 9.2 Container Library Overview
 **Table 9.2. Container Operations**
+
 ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.2.1.jpg)
 ![image](https://github.com/BensonHuangTW/Cpp-Primier-Chinese-Notes/blob/master/images/ch9/9.2.2.jpg)  
 容器定義於與他們自己名稱相同的標頭檔中，且他們是class template，因此在初始化時必須提供額外資訊，大部分(但非全部)的容器都必須提供元素的型別:  
