@@ -1,4 +1,17 @@
 # Chapter 4 Expressions
+## 4.1 Fundamentals
+C++中所有的expression都是右值(**rvalue**)或是左值(**lvalue**)，粗淺地說，當我們將物件當成右值使用時，我們使用的是該物件的"值"(its contents)，而當我們將物件當成左值使用時，我們使用的是該物件的"身份"(identity, its location in memory)。在C++中，一個左值會得到一個物件或者函式，但有些左值並不能放在`=`的左邊(e.g.`const`物件)。
+
+運算子會因為它們所需的運算元是左值還是右值以及它們回傳的是左值還是右值而有所不同，一個要點(13.6有一個例外)是:***當需要的是右值時，可以使用左值來代替，但是當需要的是左值時，則不能使用右值來代替***。
+
+目前我們所使用過的一些關於左值的運算子:
+* 賦值:要求一個非`const`的左值作為左方運算元。
+* 取址運算子(`&`):要求左值運算元，並且會以*右值*回傳指向該運算元的指標。
+* 內建取值運算子(`*`)和subscropt運算子和iterator dereference都會獲得左值。
+* increment和decrement運算子要求左值運算元，並且prefix版本的會獲得左值。
+
+左值和右值在使用`decltype`(2.5.3)也會有所不同，當我們將`decltype`作用於會*得到左值的expression*(而非variable)時，結果會是一個*reference*。舉例來說，假設`p`是一個`int*`，則`decltype(*p)`會是`int&`，這是因為取值運算子會獲得左值。相對的，`decltype(&p)`則會是`int**`，因為取址運算元回傳的是右值。
+
 ## 4.6 The Member Access Operators
 點(`.`)與箭號(`->`)運算服提供了member access，點運算符從class type的物件中獲得成員，而箭號則是結合了dereference與member access兩種功能，因此它是作用於*指向該物件的pointer中*。因此`ptr->mem`與`(*ptr).mem`是同義的:
 ``` c++
